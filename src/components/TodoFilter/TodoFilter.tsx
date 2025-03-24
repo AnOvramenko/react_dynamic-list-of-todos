@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { TodoStatus } from '../../App';
 
 interface Props {
   query: string;
   onInput: (query: string) => void;
   onSelect: (value: TodoStatus) => void;
+  setInputField: (value: string) => void
 }
 
-export const TodoFilter: React.FC<Props> = ({ query, onInput, onSelect }) => {
+export const TodoFilter: React.FC<Props> = memo(({ query, onInput, onSelect, setInputField }) => {
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onInput(event.target.value);
+    setInputField(event.target.value);
+  };
+
+  const handleOnSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    onSelect(event.target.value as TodoStatus);
+  }
+  const handleClearButton = () => {
+    setInputField('');
+    onInput('');
   };
 
   return (
@@ -18,7 +28,7 @@ export const TodoFilter: React.FC<Props> = ({ query, onInput, onSelect }) => {
         <span className="select">
           <select
             data-cy="statusSelect"
-            onChange={event => onSelect(event.target.value as TodoStatus)}
+            onChange={handleOnSelect}
           >
             {Object.values(TodoStatus).map((option: TodoStatus) => {
               return (
@@ -51,11 +61,11 @@ export const TodoFilter: React.FC<Props> = ({ query, onInput, onSelect }) => {
               data-cy="clearSearchButton"
               type="button"
               className="delete"
-              onClick={() => onInput('')}
+              onClick={handleClearButton}
             />
           )}
         </span>
       </p>
     </form>
   );
-};
+});

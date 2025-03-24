@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 
@@ -14,6 +14,19 @@ export enum TodoStatus {
   DEFAULT = 'all',
   COMPLETED = 'completed',
   ACTIVE = 'active',
+}
+
+function debounce(Callback: Function, delay: number) {
+  let timerId = 0;
+
+  return (...args: any) => {
+    window.clearTimeout(timerId);
+
+    timerId = window.setTimeout(() => {
+      Callback(...args);
+
+    }, delay)
+  }
 }
 
 const getFilteredTodos = (
@@ -49,17 +62,25 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [selectTodo, setSelectTodo] = useState<Todo | null>(null);
 
+  const [isLoading, setIsloading] = useState(true);
+
   const [inputQuery, setInputQuery] = useState('');
   const [todoStatus, setTodoStatus] = useState<TodoStatus>(TodoStatus.DEFAULT);
 
+  const [appliedQuery, setAppliedQuery] = useState('');
+  const applyInputQuery = useCallback(debounce(setAppliedQuery, 300), []);
+
   const filteredTodos = useMemo(() => {
-    return getFilteredTodos(todos, inputQuery, todoStatus);
-  }, [inputQuery, todoStatus, todos]);
+    return getFilteredTodos(todos, appliedQuery, todoStatus);
+  }, [appliedQuery, todoStatus, todos]);
 
   useEffect(() => {
-    getTodos().then((todosFromServer: Todo[]) => {
-      setTodos(todosFromServer);
-    });
+    getTodos()
+      .then((todosFromServer: Todo[]) => {
+        setTodos(todosFromServer);
+      })
+      .catch(e => console.warn(e))
+      .finally(() => setIsloading(false))
   }, []);
 
   return (
@@ -73,12 +94,13 @@ export const App: React.FC = () => {
               <TodoFilter
                 query={inputQuery}
                 onSelect={setTodoStatus}
-                onInput={setInputQuery}
+                onInput={applyInputQuery}
+                setInputField={setInputQuery}
               />
             </div>
 
             <div className="block">
-              {!todos.length ? (
+              {isLoading ? (
                 <Loader />
               ) : (
                 <TodoList

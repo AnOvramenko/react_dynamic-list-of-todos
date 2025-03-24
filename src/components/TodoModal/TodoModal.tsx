@@ -12,19 +12,25 @@ export const TodoModal: React.FC<Props> = ({ selectedTodo, setSelectTodo }) => {
   const [todoWithUser, setTodoWithUser] = useState<TodoWithUser | null>(null);
 
   useEffect(() => {
-    getUser(selectedTodo.userId).then(userFromServer => {
-      setTodoWithUser({
-        ...selectedTodo,
-        user: userFromServer,
-      });
-    });
-  }, []);
+    getUser(selectedTodo.userId)
+      .then(userFromServer => {
+        setTodoWithUser({
+          ...selectedTodo,
+          user: userFromServer,
+        });
+      })
+      .catch(e => {
+        console.error(e);
+        setSelectTodo(null);
+      })
+  }, [selectedTodo]);
 
   return (
     <div className="modal is-active" data-cy="modal">
       <div className="modal-background" />
 
-      {!todoWithUser ? (
+      {!todoWithUser
+        ? (
         <Loader />
       ) : (
         <div className="modal-card">
