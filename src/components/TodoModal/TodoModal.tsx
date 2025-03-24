@@ -19,18 +19,18 @@ export const TodoModal: React.FC<Props> = ({ selectedTodo, setSelectTodo }) => {
           user: userFromServer,
         });
       })
-      .catch(e => {
-        console.error(e);
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.error(error);
         setSelectTodo(null);
-      })
+      });
   }, [selectedTodo]);
 
   return (
     <div className="modal is-active" data-cy="modal">
       <div className="modal-background" />
 
-      {!todoWithUser
-        ? (
+      {!todoWithUser ? (
         <Loader />
       ) : (
         <div className="modal-card">

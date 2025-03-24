@@ -15,18 +15,17 @@ export enum TodoStatus {
   COMPLETED = 'completed',
   ACTIVE = 'active',
 }
-
+// eslint-disable-next-line
 function debounce(Callback: Function, delay: number) {
   let timerId = 0;
-
+  //eslint-disable-next-line
   return (...args: any) => {
     window.clearTimeout(timerId);
 
     timerId = window.setTimeout(() => {
       Callback(...args);
-
-    }, delay)
-  }
+    }, delay);
+  };
 }
 
 const getFilteredTodos = (
@@ -79,8 +78,11 @@ export const App: React.FC = () => {
       .then((todosFromServer: Todo[]) => {
         setTodos(todosFromServer);
       })
-      .catch(e => console.warn(e))
-      .finally(() => setIsloading(false))
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      })
+      .finally(() => setIsloading(false));
   }, []);
 
   return (
