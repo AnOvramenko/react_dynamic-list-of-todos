@@ -70,4 +70,4 @@ export const TodoFilter: React.FC<Props> = React.memo(
   },
 );
 
-TodoFilter.displayName = 'TodoList';
+TodoFilter.displayName = 'TodoFilter';
